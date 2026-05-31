@@ -1,0 +1,129 @@
+.app {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+}
+
+.workspace {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg);
+  border-right: 1px solid rgba(255,255,255,.045);
+}
+
+.canvas {
+  position: absolute;
+  inset: 0;
+  cursor: grab;
+  user-select: none;
+}
+
+.canvas:active {
+  cursor: grabbing;
+}
+
+.world {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 3200px;
+  height: 2400px;
+  transform-origin: 0 0;
+  isolation: isolate;
+}
+
+.toolbar {
+  position: absolute;
+  z-index: 50;
+  left: 24px;
+  bottom: 24px;
+  display: flex;
+  gap: 14px;
+  padding: 8px;
+  border-radius: 999px;
+  background: rgba(18,18,18,.74);
+  backdrop-filter: blur(18px);
+  box-shadow: var(--shadow-panel);
+  opacity: .46;
+  transform: translateY(2px);
+  transition: opacity var(--fast), transform var(--fast), background var(--fast);
+}
+
+.toolbar:hover {
+  opacity: .98;
+  transform: translateY(0);
+  background: rgba(17,17,17,.94);
+}
+
+.sidebar {
+  position: relative;
+  z-index: 40;
+  width: 48vw;
+  min-width: 520px;
+  max-width: 820px;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  background: rgba(15,15,15,.96);
+  border-left: 1px solid rgba(255,255,255,.045);
+  box-shadow: -18px 0 50px rgba(0,0,0,.28);
+  transition: width 320ms var(--ease-out), min-width 320ms var(--ease-out), max-width 320ms var(--ease-out);
+}
+
+.sidebar.full-collapsed {
+  display: none;
+}
+
+.sidebar-content {
+  flex: 1;
+  min-height: 0;
+  padding: 14px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  overflow: hidden;
+  transition: grid-template-columns 320ms var(--ease-out);
+}
+
+.quick-actions {
+  flex-shrink: 0;
+  padding: 12px 18px 18px;
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  border-top: 1px solid rgba(255,255,255,.045);
+}
+
+.workspace.list-mode .canvas {
+  overflow: auto;
+  cursor: default;
+}
+
+.workspace.list-mode .world {
+  position: relative;
+  width: 100%;
+  height: auto;
+  min-height: 100%;
+  transform: none !important;
+  padding: 94px 0 118px;
+}
+
+.workspace.list-mode #directionsLayer {
+  width: min(420px, calc(100vw - 80px));
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.workspace.list-mode .direction-node {
+  position: relative !important;
+  left: auto !important;
+  top: auto !important;
+  width: 100%;
+  min-height: 94px;
+}

@@ -1,0 +1,39 @@
+:root {
+  --bg: #151515;
+  --surface-1: rgba(18, 18, 18, .96);
+  --surface-2: rgba(31, 31, 31, .9);
+  --surface-3: rgba(42, 42, 42, .94);
+
+  --text: #f3f0e8;
+  --strong: #fff7eb;
+  --muted: #8e8e88;
+  --muted-2: #62625e;
+
+  --accent: #ff6633;
+  --accent-2: #ff7a3d;
+  --danger: #ff6d62;
+
+  --line: rgba(255, 255, 255, .055);
+  --line-2: rgba(255, 255, 255, .095);
+
+  --shadow-card:
+    0 1px 0 rgba(255, 255, 255, .035) inset,
+    0 6px 14px rgba(0, 0, 0, .22),
+    0 14px 28px rgba(0, 0, 0, .18);
+
+  --shadow-card-hover:
+    0 1px 0 rgba(255, 255, 255, .045) inset,
+    0 8px 18px rgba(0, 0, 0, .28),
+    0 18px 36px rgba(0, 0, 0, .22);
+
+  --shadow-panel:
+    0 10px 26px rgba(0, 0, 0, .22),
+    inset 0 1px 0 rgba(255, 255, 255, .035);
+
+  --shadow-modal:
+    0 34px 90px rgba(0, 0, 0, .62),
+    inset 0 1px 0 rgba(255, 255, 255, .04);
+
+  --fast: 160ms ease;
+  --ease-out: cubic-bezier(.16, 1, .3, 1);
+}

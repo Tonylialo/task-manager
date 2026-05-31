@@ -1,0 +1,39 @@
+.context-menu {
+  position: fixed;
+  z-index: 500;
+  min-width: 190px;
+  padding: 7px;
+  border-radius: 16px;
+  background: rgba(18,18,18,.96);
+  box-shadow:
+    0 18px 42px rgba(0,0,0,.38),
+    inset 0 1px 0 rgba(255,255,255,.035);
+  backdrop-filter: blur(18px);
+}
+
+.context-menu-item {
+  width: 100%;
+  min-height: 38px;
+  padding: 0 12px;
+  border: 0;
+  border-radius: 11px;
+  background: transparent;
+  color: var(--text);
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  font-size: 13px;
+  text-align: left;
+}
+
+.context-menu-item:hover {
+  background: rgba(255,255,255,.075);
+}
+
+.context-menu-item.danger {
+  color: #ffb8b2;
+}
+
+.context-menu-item.danger:hover {
+  background: rgba(255,109,98,.14);
+}

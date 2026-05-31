@@ -1,0 +1,153 @@
+{
+  "viewMode": "canvas",
+  "view": {
+    "x": -220.49119196385197,
+    "y": -186.04775089388642,
+    "scale": 0.9518683041575732
+  },
+  "directions": [
+    {
+      "id": "ed9kixhoy",
+      "title": "Shandian",
+      "symbol": "閃",
+      "color": "#8f9bff",
+      "priority": 1,
+      "goal": "",
+      "showAsTask": true,
+      "x": 1617.9843675013124,
+      "y": 818.0919185489922
+    },
+    {
+      "id": "doih16daw",
+      "title": "Фриланс",
+      "symbol": "仕",
+      "color": "#f9f06b",
+      "priority": 2,
+      "goal": "",
+      "showAsTask": true,
+      "x": 1116.457544998173,
+      "y": 488.489971701257
+    },
+    {
+      "id": "3o1srhti3",
+      "title": "Taya",
+      "symbol": "多",
+      "color": "#ff7aa5",
+      "priority": 3,
+      "goal": "",
+      "showAsTask": true,
+      "x": 711.5592213588716,
+      "y": 598.2048025996919
+    },
+    {
+      "id": "om402327z",
+      "title": "Сайт",
+      "symbol": "網",
+      "color": "#7ef0ff",
+      "priority": 4,
+      "goal": "",
+      "showAsTask": true,
+      "x": 466.50079999999986,
+      "y": 758.0896
+    },
+    {
+      "id": "tppe13kyu",
+      "title": "YouTube",
+      "symbol": "映",
+      "color": "#e01b24",
+      "priority": 5,
+      "goal": "",
+      "showAsTask": true,
+      "x": 1759.0994284544,
+      "y": 482.6148888575997
+    }
+  ],
+  "tasks": [
+    {
+      "id": "pvj7yvrq5",
+      "directionId": "ed9kixhoy",
+      "title": "Монтаж видео",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    },
+    {
+      "id": "97u6apu2a",
+      "directionId": "ed9kixhoy",
+      "title": "5 codex",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    },
+    {
+      "id": "32rkgo374",
+      "directionId": "doih16daw",
+      "title": "копирайтер",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    },
+    {
+      "id": "zjtpkx2ss",
+      "directionId": "doih16daw",
+      "title": "Видео на workana",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    },
+    {
+      "id": "7u22nj83l",
+      "directionId": "om402327z",
+      "title": "Добавить проект тату",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    },
+    {
+      "id": "8y94ayyqz",
+      "directionId": "om402327z",
+      "title": "Copywriting",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    },
+    {
+      "id": "2e6esb7y2",
+      "directionId": "tppe13kyu",
+      "title": "Сценарий Автостоп",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    },
+    {
+      "id": "8c4cg3g6r",
+      "directionId": "tppe13kyu",
+      "title": "Сценарий для \"Почему ты не когда не отправишься в путешествие\"\"",
+      "description": "",
+      "goal": "",
+      "deadline": "",
+      "priority": 2
+    }
+  ],
+  "notifications": [
+    {
+      "id": "24e86970-a9b5-4218-9840-1dcab26533ed",
+      "title": "База подключена",
+      "text": "Данные загружены в локальную базу.",
+      "read": false
+    },
+    {
+      "id": "7b722c76-900c-45cc-82bc-2f9cfb1ca37f",
+      "title": "Автосохранение",
+      "text": "Изменения сохраняются в localStorage.",
+      "read": true
+    }
+  ]
+}

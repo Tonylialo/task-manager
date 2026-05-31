@@ -1,0 +1,78 @@
+.field-geometry {
+  position: absolute;
+  inset: 0;
+  width: 3200px;
+  height: 2400px;
+  overflow: visible;
+  pointer-events: none;
+  z-index: 0;
+}
+
+#directionsLayer {
+  position: relative;
+  z-index: 5;
+}
+
+.field-line,
+.field-line-pulse {
+  vector-effect: non-scaling-stroke;
+  stroke-linecap: round;
+}
+
+.field-line-main {
+  stroke: rgba(255,255,255,.18);
+  stroke-width: 1;
+}
+
+.field-line-side {
+  stroke: rgba(255,255,255,.055);
+  stroke-width: 1;
+  stroke-dasharray: 8 18;
+}
+
+.field-line-pulse {
+  stroke: rgba(255,255,255,.92);
+  stroke-width: 2;
+  stroke-dasharray: 36 10000;
+  stroke-dashoffset: 0;
+  opacity: 0;
+  filter: drop-shadow(0 0 8px rgba(255,255,255,.55));
+  animation: mainLinePulse 5.4s linear infinite;
+}
+
+.field-triangle {
+  fill: rgba(255,255,255,.96);
+  stroke: rgba(255,255,255,.28);
+  stroke-width: 1;
+  vector-effect: non-scaling-stroke;
+  filter: drop-shadow(0 18px 34px rgba(0,0,0,.38));
+}
+
+.workspace.list-mode .field-geometry {
+  display: none;
+}
+
+@keyframes mainLinePulse {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+
+  10% {
+    opacity: .95;
+  }
+
+  42% {
+    opacity: .95;
+  }
+
+  55% {
+    opacity: 0;
+    stroke-dashoffset: -3200;
+  }
+
+  100% {
+    opacity: 0;
+    stroke-dashoffset: -3200;
+  }
+}

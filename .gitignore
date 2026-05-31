@@ -1,0 +1,8 @@
+node_modules/
+_backup*/
+debug*.txt
+*.log
+.env
+
+data/db.json
+data/db.json.tmp

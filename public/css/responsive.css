@@ -1,0 +1,39 @@
+@media (max-width: 980px) {
+  .app {
+    flex-direction: column;
+  }
+
+  .workspace {
+    height: 55vh;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+
+  .sidebar {
+    width: 100vw;
+    min-width: 100vw;
+    max-width: 100vw;
+    height: 45vh;
+  }
+
+  .sidebar-content {
+    grid-template-columns: 1fr;
+  }
+
+  .toolbar {
+    left: 14px;
+    right: 14px;
+    bottom: calc(45vh + 14px);
+    max-width: calc(100vw - 28px);
+    overflow-x: auto;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
