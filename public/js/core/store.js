@@ -14,7 +14,7 @@ const fallbackState = {
 
 export async function loadState() {
   try {
-    const response = await fetch("/api/db", {
+    const response = await fetch("./api/db", {
       cache: "no-store"
     });
 
@@ -38,7 +38,7 @@ export async function saveState(state) {
   const clean = normalizeState(state);
 
   try {
-    const response = await fetch("/api/db", {
+    const response = await fetch("./api/db", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
