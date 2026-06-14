@@ -10,7 +10,7 @@
   background: rgba(255,255,255,.055);
   color: #d5d2c9;
   box-shadow: none;
-  transition: background var(--fast), color var(--fast), transform var(--fast), opacity var(--fast);
+  transition: background var(--fast), color var(--fast), opacity var(--fast), filter var(--fast);
 }
 
 .btn {
@@ -49,18 +49,28 @@
 .btn:hover,
 .icon-btn:hover,
 .quick-btn:hover {
-  transform: translateY(-1px);
+  transform: none;
   background: rgba(255,255,255,.095);
   color: var(--strong);
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, var(--accent-2), var(--accent));
-  color: #1a0b04;
+  background: linear-gradient(180deg, rgba(194, 199, 184, .92), rgba(146, 154, 136, .92));
+  color: #141611;
   font-weight: 700;
+}
+
+.btn-primary:hover {
+  background: linear-gradient(180deg, rgba(207, 212, 197, .96), rgba(158, 166, 148, .96));
+  color: #11130f;
 }
 
 .btn.danger {
   background: rgba(255,109,98,.14);
   color: #ffb8b2;
+}
+
+.btn.danger:hover {
+  background: rgba(255,109,98,.2);
+  color: #ffd0cc;
 }

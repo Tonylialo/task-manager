@@ -1,74 +1,38 @@
 import { els } from "../core/dom.js";
-import { state, persist } from "../core/state.js";
-import { clamp } from "../core/utils.js";
-
-const pan = {
-  active: false,
-  x: 0,
-  y: 0,
-  viewX: 0,
-  viewY: 0
-};
+import { state } from "../core/state.js";
 
 export function applyView() {
-  if (state.viewMode === "list") {
-    els.world.style.transform = "none";
-    return;
+  if (!state.view) {
+    state.view = {
+      x: 0,
+      y: 0,
+      scale: 1,
+    };
   }
 
-  els.world.style.transform = `translate(${state.view.x}px, ${state.view.y}px) scale(${state.view.scale})`;
+  state.view.x = 0;
+  state.view.y = 0;
+  state.view.scale = 1;
+
+  els.world.style.transform = "none";
+  els.world.style.transformOrigin = "0 0";
 }
 
 export function bindCanvas() {
-  els.canvas.addEventListener("pointerdown", event => {
-    if (state.viewMode === "list") return;
-    if (event.button !== 0) return;
+  els.workspace.addEventListener(
+    "wheel",
+    () => {
+      // Keep native vertical scrolling enabled.
+    },
+    { passive: true },
+  );
+}
 
-    pan.active = true;
-    pan.x = event.clientX;
-    pan.y = event.clientY;
-    pan.viewX = state.view.x;
-    pan.viewY = state.view.y;
+export function clientToWorld(clientX, clientY) {
+  const rect = els.canvas.getBoundingClientRect();
 
-    els.canvas.setPointerCapture(event.pointerId);
-  });
-
-  els.canvas.addEventListener("pointermove", event => {
-    if (state.viewMode === "list") return;
-    if (!pan.active) return;
-
-    state.view.x = pan.viewX + event.clientX - pan.x;
-    state.view.y = pan.viewY + event.clientY - pan.y;
-
-    applyView();
-  });
-
-  els.canvas.addEventListener("pointerup", () => {
-    pan.active = false;
-    persist();
-  });
-
-  els.canvas.addEventListener("wheel", event => {
-    if (state.viewMode === "list") return;
-
-    event.preventDefault();
-
-    const rect = els.canvas.getBoundingClientRect();
-    const mouseX = event.clientX - rect.left;
-    const mouseY = event.clientY - rect.top;
-
-    const oldScale = state.view.scale;
-    const zoom = event.deltaY < 0 ? 1.08 : 0.92;
-    const newScale = clamp(oldScale * zoom, 0.35, 1.8);
-
-    const worldX = (mouseX - state.view.x) / oldScale;
-    const worldY = (mouseY - state.view.y) / oldScale;
-
-    state.view.scale = newScale;
-    state.view.x = mouseX - worldX * newScale;
-    state.view.y = mouseY - worldY * newScale;
-
-    applyView();
-    persist();
-  }, { passive: false });
+  return {
+    x: Math.round(clientX - rect.left),
+    y: Math.round(clientY - rect.top + els.workspace.scrollTop),
+  };
 }

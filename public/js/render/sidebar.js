@@ -4,32 +4,39 @@ import { escapeHtml, timeLeft } from "../core/utils.js";
 
 const EMPTY_TEXTS = new Set([
   "",
+  "Task created.",
+  "Task created",
   "Задача создана.",
   "Задача создана",
-  "Untitled task"
+  "Untitled task",
 ]);
 
 let notificationEventsBound = false;
 let panelEventsBound = false;
 
 export function renderTasks({ onOpenTask }) {
-  const directions = new Map(state.directions.map(direction => [direction.id, direction]));
+  const directions = new Map(
+    state.directions.map((direction) => [direction.id, direction]),
+  );
 
   const taskItems = state.tasks
-    .map(task => ({
+    .map((task) => ({
       type: "task",
       task,
-      direction: directions.get(task.directionId)
+      direction: directions.get(task.directionId),
     }))
-    .filter(item => item.direction);
+    .filter((item) => item.direction);
 
   const emptyDirectionItems = getSortedDirections()
-    .filter(direction => {
-      return direction.showAsTask && !state.tasks.some(task => task.directionId === direction.id);
+    .filter((direction) => {
+      return (
+        direction.showAsTask &&
+        !state.tasks.some((task) => task.directionId === direction.id)
+      );
     })
-    .map(direction => ({
+    .map((direction) => ({
       type: "empty-direction",
-      direction
+      direction,
     }));
 
   const items = [...taskItems, ...emptyDirectionItems].sort(sortSidebarItems);
@@ -50,28 +57,23 @@ export function renderTasks({ onOpenTask }) {
 function renderTaskCard(task, direction, onOpenTask) {
   const card = document.createElement("div");
   card.className = "task-card";
-  card.style.setProperty("--task-color", direction.color);
+  card.dataset.taskId = task.id;
+  card.style.setProperty("--task-color", direction.color || "#5f6b55");
 
   const body = cleanBody(task.goal || task.description || "");
 
   card.innerHTML = `
     <div class="task-top">
-      <div>
+      <div class="task-main">
         <h4 class="task-title">${escapeHtml(task.title)}</h4>
-
-        <div class="task-dir">
-          <span class="task-dir-color"></span>
-          <span>${escapeHtml(direction.symbol || "◌")} ${escapeHtml(direction.title)}</span>
-        </div>
+        <div class="task-dir">${escapeHtml(direction.symbol || "◌")} ${escapeHtml(direction.title)}</div>
       </div>
-
       ${task.deadline ? `<div class="timer">${timeLeft(task.deadline)}</div>` : ""}
     </div>
-
     ${body ? `<p class="goal">${escapeHtml(body)}</p>` : ""}
   `;
 
-  card.addEventListener("click", event => {
+  card.addEventListener("click", (event) => {
     event.preventDefault();
     event.stopPropagation();
     onOpenTask(task.id);
@@ -83,22 +85,17 @@ function renderTaskCard(task, direction, onOpenTask) {
 function renderEmptyDirectionCard(direction) {
   const card = document.createElement("div");
   card.className = "task-card empty-direction";
-  card.style.setProperty("--task-color", direction.color);
+  card.style.setProperty("--task-color", direction.color || "#5f6b55");
 
   const body = cleanBody(direction.goal || "");
 
   card.innerHTML = `
     <div class="task-top">
-      <div>
+      <div class="task-main">
         <h4 class="task-title">${escapeHtml(direction.title)}</h4>
-
-        <div class="task-dir">
-          <span class="task-dir-color"></span>
-          <span>${escapeHtml(direction.symbol || "◌")} Направление</span>
-        </div>
+        <div class="task-dir">${escapeHtml(direction.symbol || "◌")} Direction</div>
       </div>
     </div>
-
     ${body ? `<p class="goal">${escapeHtml(body)}</p>` : ""}
   `;
 
@@ -124,19 +121,21 @@ export function renderNotifications() {
   }
 }
 
-export function bindPanelCollapse() {
+export function bindPanelCollapse(onChange = null) {
   if (panelEventsBound) return;
   panelEventsBound = true;
 
-  document.querySelectorAll(".panel-head").forEach(head => {
+  document.querySelectorAll(".panel-head").forEach((head) => {
     const panel = head.closest(".panel");
     if (!panel) return;
 
-    head.addEventListener("click", event => {
+    head.addEventListener("click", (event) => {
       event.preventDefault();
       event.stopPropagation();
 
       panel.classList.toggle("collapsed");
+      window.dispatchEvent(new CustomEvent("panel-layout-change"));
+      onChange?.();
     });
   });
 }
@@ -145,7 +144,7 @@ function bindNotificationEventsOnce() {
   if (notificationEventsBound) return;
   notificationEventsBound = true;
 
-  els.notificationList.addEventListener("click", event => {
+  els.notificationList.addEventListener("click", (event) => {
     const card = event.target.closest(".notification");
     if (!card) return;
 
@@ -153,7 +152,9 @@ function bindNotificationEventsOnce() {
     event.stopPropagation();
 
     const id = card.dataset.notificationId;
-    const item = state.notifications.find(notification => notification.id === id);
+    const item = state.notifications.find(
+      (notification) => notification.id === id,
+    );
     if (!item) return;
 
     item.read = !item.read;
@@ -161,13 +162,16 @@ function bindNotificationEventsOnce() {
 
     persist();
 
-    const allRead = state.notifications.length > 0 && state.notifications.every(notification => notification.read);
+    const allRead =
+      state.notifications.length > 0 &&
+      state.notifications.every((notification) => notification.read);
 
     if (allRead) {
       const panel = document.getElementById("notificationsPanel");
 
       window.setTimeout(() => {
         panel?.classList.add("collapsed");
+        window.dispatchEvent(new CustomEvent("panel-layout-change"));
       }, 260);
     }
   });

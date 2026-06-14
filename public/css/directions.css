@@ -3,100 +3,423 @@
   z-index: 6;
   width: 252px;
   min-height: 108px;
-  padding: 14px;
-  border-radius: 22px;
-  background: rgba(34,34,34,.88);
-  border: 0;
+  padding: 16px;
+  border-radius: 24px;
+  border: 1px solid rgba(232, 229, 217, 0.06);
+  background: rgba(34, 34, 34, 0.88);
+  color: var(--text);
   box-shadow: var(--shadow-card);
   backdrop-filter: blur(12px);
   cursor: pointer;
-  animation: cardIn 220ms var(--ease-out) both;
-  transition: transform var(--fast), background var(--fast), box-shadow var(--fast);
+  transition:
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease,
+    filter 180ms ease;
 }
 
 .direction-node:hover {
-  transform: translateY(-2px);
-  background: rgba(42,42,42,.94);
+  background: rgba(42, 42, 42, 0.94);
   box-shadow: var(--shadow-card-hover);
 }
 
-.direction-head {
-  display: flex;
+.direction-node.selected {
+  border-color: rgba(214, 218, 210, 0.64);
+  background: rgba(44, 46, 43, 0.94);
+  box-shadow:
+    0 0 0 2px rgba(214, 218, 210, 0.12),
+    0 18px 46px rgba(0, 0, 0, 0.34);
+  filter: brightness(1.04);
+}
+
+.direction-content {
+  min-height: 76px;
+  display: grid;
+  place-items: center;
+  align-content: center;
   gap: 10px;
-  align-items: flex-start;
+  text-align: center;
+}
+
+.direction-head,
+.direction-title,
+.direction-title-line {
+  display: contents;
 }
 
 .direction-symbol {
-  width: 36px;
-  height: 36px;
+  width: 42px;
+  height: 42px;
   display: grid;
   place-items: center;
-  flex-shrink: 0;
-  border: 0;
-  border-radius: 13px;
-  box-shadow: none;
-  font-size: 15px;
-  background: color-mix(in srgb, var(--node-color), transparent 72%);
-}
-
-.direction-title {
-  flex: 1;
-  min-width: 0;
-}
-
-.direction-title-line {
-  display: flex;
-  align-items: center;
-  gap: 7px;
-  min-width: 0;
-}
-
-.direction-title-line strong {
-  font-size: 14px;
-  line-height: 1.18;
-  letter-spacing: -.015em;
-  color: var(--strong);
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.direction-priority {
-  min-width: 18px;
-  height: 18px;
-  padding: 0 6px;
-  border-radius: 999px;
-  display: inline-grid;
-  place-items: center;
-  background: rgba(255,255,255,.075);
-  color: var(--muted);
-  font-size: 10px;
+  border-radius: 15px;
+  background: color-mix(in srgb, var(--node-color), transparent 68%);
+  color: rgba(255, 255, 255, 0.94);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.12),
+    0 10px 22px color-mix(in srgb, var(--node-color), transparent 78%);
+  font-size: 18px;
   line-height: 1;
 }
 
-.direction-goal {
-  margin-top: 11px;
-  font-size: 11px;
-  line-height: 1.42;
-  color: var(--muted);
+.direction-name,
+.direction-title-line strong {
+  max-width: 100%;
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  color: var(--strong);
+  font-size: 15px;
+  font-weight: 750;
+  line-height: 1.2;
+  letter-spacing: -0.02em;
+  white-space: nowrap;
 }
 
-.direction-meta {
-  margin-top: 11px;
+.direction-priority,
+.direction-meta,
+.direction-goal {
+  display: none !important;
+}
+
+.direction-tasks-row {
+  position: absolute;
+  z-index: 25;
   display: flex;
-  justify-content: flex-start;
+  flex-direction: row;
+  align-items: center;
+  justify-content: center;
+  gap: 9px;
+  overflow: visible;
+  padding: 0;
+  background: transparent;
+  border: 0;
+  white-space: nowrap;
+  width: max-content;
+  max-width: none;
+  transform: translateX(-50%);
+  pointer-events: auto;
+}
+
+.direction-task-chip {
+  flex: 0 0 auto;
+  min-width: 112px;
+  max-width: 178px;
+  min-height: 38px;
+  padding: 8px 13px;
+  border-radius: 999px;
+  border: 0;
+  background: color-mix(in srgb, var(--task-color), rgba(37, 37, 37, 0.92) 78%);
+  color: var(--text);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.2);
+  cursor: pointer;
+  text-align: left;
+  transition: background 160ms ease, opacity 160ms ease;
+}
+
+.direction-task-chip:hover {
+  background: color-mix(in srgb, var(--task-color), rgba(42, 42, 42, 0.94) 72%);
+}
+
+.direction-task-chip strong {
+  display: block;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 12px;
+  line-height: 1.2;
+}
+
+.direction-task-chip span {
+  display: block;
+  margin-top: 3px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 9px;
+  line-height: 1.2;
+  opacity: 0.68;
+}
+
+.direction-focus-overlay {
+  position: fixed;
+  z-index: 90;
+  overflow: hidden;
+  pointer-events: auto;
+  background:
+    radial-gradient(circle at 55% 50%, rgba(255, 255, 255, 0.055), transparent 35%),
+    rgba(8, 8, 8, 0.42);
+  backdrop-filter: blur(6px);
+  animation: focusOverlayIn 520ms var(--ease-out) both;
+}
+
+.direction-focus-stage {
+  width: min(860px, calc(100% - 52px));
+  height: min(500px, calc(100% - 92px));
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  display: grid;
+  grid-template-columns: minmax(220px, 1fr) minmax(240px, 320px);
+  gap: 24px;
+  transform: translate(-50%, -50%);
+  animation: focusStageIn 640ms cubic-bezier(.2, .9, .2, 1) 80ms both;
+}
+
+.direction-focus-tasks {
+  min-height: 0;
+  padding: 6px;
+  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  scrollbar-width: thin;
+}
+
+.focus-task-card {
+  width: 100%;
+  min-height: 76px;
+  padding: 14px 16px;
+  border-radius: 20px;
+  border: 0;
+  background: color-mix(in srgb, var(--task-color), rgba(37, 37, 37, 0.94) 82%);
+  color: var(--text);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+  text-align: left;
+  cursor: pointer;
+  transition: background 180ms ease, opacity 180ms ease;
+}
+
+.focus-task-card:hover,
+.focus-task-card.selected {
+  background: color-mix(in srgb, var(--task-color), rgba(47, 47, 47, 0.96) 76%);
+}
+
+.focus-task-card strong,
+.focus-task-card span,
+.focus-task-card small {
+  display: block;
+}
+
+.focus-task-card strong {
+  font-size: 14px;
+  line-height: 1.22;
+}
+
+.focus-task-card span {
+  margin-top: 7px;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.35;
+}
+
+.focus-task-card small {
+  margin-top: 8px;
   color: var(--muted-2);
   font-size: 10px;
 }
 
-@keyframes cardIn {
+.focus-task-empty {
+  padding: 18px;
+  border-radius: 20px;
+  background: rgba(255, 255, 255, 0.055);
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.direction-focus-card {
+  min-height: 300px;
+  padding: 26px;
+  border-radius: 32px;
+  border: 1px solid rgba(232, 229, 217, 0.09);
+  background:
+    radial-gradient(circle at 50% 0%, rgba(255, 255, 255, 0.08), transparent 42%),
+    rgba(34, 34, 34, 0.92);
+  color: var(--text);
+  box-shadow:
+    0 24px 60px rgba(0, 0, 0, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.06);
+  display: grid;
+  place-items: center;
+  align-content: center;
+  gap: 16px;
+  text-align: center;
+  cursor: pointer;
+}
+
+.focus-card-symbol {
+  width: 62px;
+  height: 62px;
+  display: grid;
+  place-items: center;
+  border-radius: 22px;
+  background: color-mix(in srgb, var(--node-color), transparent 66%);
+  font-size: 26px;
+  box-shadow: 0 14px 28px color-mix(in srgb, var(--node-color), transparent 82%);
+}
+
+.direction-focus-card strong {
+  font-size: 24px;
+  line-height: 1.12;
+  letter-spacing: -0.035em;
+}
+
+.direction-focus-card em {
+  max-width: 24em;
+  color: var(--muted);
+  font-size: 13px;
+  line-height: 1.42;
+  font-style: normal;
+}
+
+.focus-back-btn {
+  display: none !important;
+}
+
+@keyframes focusOverlayIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes focusStageIn {
   from {
     opacity: 0;
-    transform: translateY(6px) scale(.99);
+    transform: translate(-50%, -50%) scale(0.9);
   }
-
   to {
     opacity: 1;
-    transform: translateY(0) scale(1);
+    transform: translate(-50%, -50%) scale(1);
   }
+}
+
+@media (max-width: 760px) {
+  .direction-focus-stage {
+    width: calc(100% - 28px);
+    height: calc(100% - 86px);
+    grid-template-columns: 1fr;
+    grid-template-rows: minmax(180px, 1fr) auto;
+    gap: 14px;
+  }
+
+  .direction-focus-card {
+    min-height: 190px;
+    padding: 20px;
+  }
+}
+
+/* v4 interaction and task layout refinements */
+.direction-node {
+  transition:
+    transform 220ms cubic-bezier(.2, .9, .2, 1),
+    background 180ms ease,
+    border-color 180ms ease,
+    box-shadow 180ms ease,
+    opacity 180ms ease,
+    filter 180ms ease;
+}
+
+.direction-node:hover,
+.direction-node.selected {
+  transform: translateY(-3px) scale(1.012);
+  background: rgba(42, 42, 42, 0.94);
+  box-shadow: var(--shadow-card-hover);
+}
+
+.direction-node.dragging {
+  opacity: 0.48;
+  transform: scale(0.965);
+  filter: saturate(0.7);
+}
+
+.direction-node.drag-over {
+  box-shadow:
+    var(--shadow-card-hover),
+    0 0 0 2px rgba(214, 218, 210, 0.24);
+}
+
+.direction-node.drag-over-before::before,
+.direction-node.drag-over-after::after {
+  content: "";
+  position: absolute;
+  left: 18px;
+  right: 18px;
+  height: 2px;
+  border-radius: 999px;
+  background: rgba(214, 218, 210, 0.82);
+  box-shadow: 0 0 16px rgba(214, 218, 210, 0.34);
+}
+
+.direction-node.drag-over-before::before {
+  top: -12px;
+}
+
+.direction-node.drag-over-after::after {
+  bottom: -12px;
+}
+
+.direction-tasks-row.right-side {
+  justify-content: flex-start;
+  transform: none;
+}
+
+.direction-tasks-row.left-side {
+  justify-content: flex-end;
+  flex-direction: row-reverse;
+  transform: translateX(-100%);
+}
+
+.direction-tasks-row.center-side {
+  justify-content: center;
+  transform: translateX(-50%);
+}
+
+.direction-task-chip {
+  border: 0 !important;
+  background: color-mix(in srgb, var(--task-color), rgba(37, 37, 37, 0.92) 70%);
+  box-shadow: 0 10px 22px rgba(0, 0, 0, 0.18);
+}
+
+.direction-task-chip:hover {
+  background: color-mix(in srgb, var(--task-color), rgba(42, 42, 42, 0.94) 68%);
+}
+
+.direction-task-chip.selected,
+.focus-task-card.selected {
+  outline: none;
+  filter: none;
+}
+
+.focus-task-card,
+.focus-task-card:hover,
+.focus-task-card.selected {
+  background: color-mix(in srgb, var(--task-color), rgba(37, 37, 37, 0.94) 74%);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.18);
+}
+
+/* v5: visible focus-task selection for mouse hover and keyboard arrows */
+.focus-task-card {
+  position: relative;
+  outline: 0;
+}
+
+.focus-task-card:hover,
+.focus-task-card:focus-visible,
+.focus-task-card.selected {
+  background: color-mix(in srgb, var(--task-color), rgba(54, 54, 54, 0.98) 62%) !important;
+  box-shadow:
+    0 14px 34px rgba(0, 0, 0, 0.28),
+    0 0 0 1px rgba(214, 218, 210, 0.18) !important;
+}
+
+.focus-task-card:hover::before,
+.focus-task-card:focus-visible::before,
+.focus-task-card.selected::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 12px;
+  bottom: 12px;
+  width: 4px;
+  border-radius: 0 999px 999px 0;
+  background: rgba(214, 218, 210, 0.78);
+  box-shadow: 0 0 14px rgba(214, 218, 210, 0.22);
 }

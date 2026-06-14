@@ -1,6 +1,6 @@
 import { els } from "../core/dom.js";
 import { state, persist, getSortedDirections, setDirectionPriorityUnique } from "../core/state.js";
-import { escapeHtml, escapeAttr, timeLeft } from "../core/utils.js";
+import { escapeHtml, escapeAttr } from "../core/utils.js";
 
 let modalMode = null;
 let editingId = null;
@@ -13,6 +13,11 @@ export function setModalRenderCallback(callback) {
 }
 
 export function bindModalEvents() {
+  els.saveBtn.textContent = "Save";
+  els.deleteBtn.textContent = "Delete";
+  els.cancelBtn.textContent = "Cancel";
+  els.closeModalBtn.setAttribute("aria-label", "Close");
+
   els.saveBtn.addEventListener("click", () => {
     if (modalMode === "direction") saveDirectionFromModal();
     if (modalMode === "task") saveTaskFromModal();
@@ -28,9 +33,13 @@ export function bindModalEvents() {
 }
 
 export function openDirectionModal(id = null, position = null) {
+  resetActionButtons();
   modalMode = "direction";
   editingId = id;
   nextDirectionPosition = position;
+
+  const sortedDirections = getSortedDirections();
+  const maxPriority = id ? Math.max(1, sortedDirections.length) : Math.max(1, sortedDirections.length + 1);
 
   const direction = id
     ? state.directions.find(item => item.id === id)
@@ -38,50 +47,50 @@ export function openDirectionModal(id = null, position = null) {
       title: "",
       symbol: "◌",
       color: "#5f6b55",
-      priority: getSortedDirections().length + 1,
+      priority: maxPriority,
       goal: "",
       showAsTask: true
     };
 
-  els.modalTitle.textContent = id ? "Редактировать направление" : "Создать направление";
+  els.modalTitle.textContent = id ? "Edit direction" : "Create direction";
   els.deleteBtn.style.display = id ? "inline-flex" : "none";
   els.saveBtn.style.display = "inline-flex";
+  els.cancelBtn.style.display = "inline-flex";
   els.modalActions.style.display = "flex";
 
   els.modalForm.innerHTML = `
     <div class="direction-inline-row">
       <div class="field">
-        <label>Символ</label>
+        <label>Symbol</label>
         <input id="fieldSymbol" value="${escapeAttr(direction.symbol || "")}" placeholder="◌" />
       </div>
 
       <div class="field">
-        <label>Название</label>
-        <input id="fieldTitle" value="${escapeAttr(direction.title)}" placeholder="Например: Фриланс" />
+        <label>Name</label>
+        <input id="fieldTitle" value="${escapeAttr(direction.title)}" placeholder="Example: Freelance" />
       </div>
 
       <div class="field color-square-field">
-        <label>Цвет</label>
+        <label>Color</label>
         <button class="color-button" id="colorButton" type="button" style="--picked-color:${escapeAttr(direction.color || "#5f6b55")}"></button>
         <input id="fieldColor" type="color" value="${escapeAttr(direction.color || "#5f6b55")}" />
       </div>
     </div>
 
     <div class="field priority-input">
-      <label>Приоритет</label>
-      <div class="priority-control">
-        <input id="fieldPriority" type="number" value="${escapeAttr(direction.priority || 1)}" />
-        <div class="priority-arrows">
-          <button type="button" id="priorityPlus" aria-label="Выше">↑</button>
-          <button type="button" id="priorityMinus" aria-label="Ниже">↓</button>
-        </div>
+      <label>Priority</label>
+      <div class="priority-control custom-priority-control" data-max-priority="${maxPriority}">
+        <button type="button" class="priority-step" id="priorityUp" aria-label="Move higher">↑</button>
+        <input id="fieldPriority" inputmode="numeric" value="${escapeAttr(direction.priority || maxPriority)}" readonly />
+        <button type="button" class="priority-step" id="priorityDown" aria-label="Move lower">↓</button>
       </div>
+      <small class="priority-hint">Changing this number shifts the other directions automatically after saving.</small>
     </div>
 
     <div class="switch-field">
       <div class="switch-text">
-        <strong>Показывать в задачах</strong>
-        <span>Если внутри направления нет задач, оно появится в списке задач.</span>
+        <strong>Show in tasks</strong>
+        <span>If this direction has no tasks, it appears in the task list.</span>
       </div>
 
       <label class="switch">
@@ -91,8 +100,8 @@ export function openDirectionModal(id = null, position = null) {
     </div>
 
     <div class="field">
-      <label>Цель направления</label>
-      <textarea id="fieldGoal" placeholder="Что должно измениться?">${escapeHtml(direction.goal || "")}</textarea>
+      <label>Direction goal</label>
+      <textarea id="fieldGoal" placeholder="What should change?">${escapeHtml(direction.goal || "")}</textarea>
     </div>
   `;
 
@@ -105,18 +114,20 @@ export function openDirectionModal(id = null, position = null) {
     colorButton.style.setProperty("--picked-color", colorInput.value);
   });
 
-  document.getElementById("priorityPlus").addEventListener("click", () => {
-    priorityInput.value = Math.max(1, Number(priorityInput.value || 1) - 1);
-  });
-
-  document.getElementById("priorityMinus").addEventListener("click", () => {
-    priorityInput.value = Number(priorityInput.value || 1) + 1;
+  bindCounter({
+    input: priorityInput,
+    up: document.getElementById("priorityUp"),
+    down: document.getElementById("priorityDown"),
+    min: 1,
+    max: maxPriority,
+    upMeans: -1,
   });
 
   els.modalBackdrop.classList.add("open");
 }
 
 export function openTaskModal(id = null, directionId = null) {
+  resetActionButtons();
   modalMode = "task";
   editingId = id;
   presetTaskDirectionId = directionId;
@@ -138,10 +149,12 @@ export function openTaskModal(id = null, directionId = null) {
     };
 
   const selectedDirectionId = directionId || task.directionId;
+  const deadline = splitDeadline(task.deadline);
 
-  els.modalTitle.textContent = id ? "Редактировать задачу" : "Создать задачу";
+  els.modalTitle.textContent = id ? "Edit task" : "Create task";
   els.deleteBtn.style.display = id ? "inline-flex" : "none";
   els.saveBtn.style.display = "inline-flex";
+  els.cancelBtn.style.display = "none";
   els.modalActions.style.display = "flex";
 
   const directionOptions = state.directions.map(direction => {
@@ -156,108 +169,66 @@ export function openTaskModal(id = null, directionId = null) {
     ? `<input id="fieldDirection" type="hidden" value="${escapeAttr(directionId)}" />`
     : `
       <div class="field">
-        <label>Направление</label>
+        <label>Direction</label>
         <select id="fieldDirection">${directionOptions}</select>
       </div>
     `;
 
   els.modalForm.innerHTML = `
     <div class="field">
-      <label>Название задачи</label>
-      <input id="fieldTitle" value="${escapeAttr(task.title)}" placeholder="Например: Монтаж видео" />
+      <label>Task name</label>
+      <input id="fieldTitle" value="${escapeAttr(task.title)}" placeholder="Example: Edit video" />
     </div>
 
     ${directionField}
 
     <div class="field">
-      <label>Описание</label>
-      <textarea id="fieldDescription" placeholder="Полное описание задачи">${escapeHtml(task.description || "")}</textarea>
+      <label>Description</label>
+      <textarea id="fieldDescription" placeholder="Full task description">${escapeHtml(task.description || "")}</textarea>
     </div>
 
     <div class="field">
-      <label>Goal / Final Result</label>
-      <textarea id="fieldGoal" placeholder="Что должно получиться?">${escapeHtml(task.goal || "")}</textarea>
+      <label>Goal / final result</label>
+      <textarea id="fieldGoal" placeholder="What should be done?">${escapeHtml(task.goal || "")}</textarea>
     </div>
 
     <div class="form-row">
-      <div class="field">
-        <label>Дедлайн</label>
-        <input id="fieldDeadline" type="datetime-local" value="${escapeAttr(task.deadline || "")}" />
+      <div class="field deadline-field">
+        <label>Deadline</label>
+        <div class="deadline-parts">
+          <input id="deadlineDay" inputmode="numeric" maxlength="2" placeholder="DD" value="${escapeAttr(deadline.day)}" />
+          <input id="deadlineMonth" inputmode="numeric" maxlength="2" placeholder="MM" value="${escapeAttr(deadline.month)}" />
+          <input id="deadlineYear" inputmode="numeric" maxlength="2" placeholder="YY" value="${escapeAttr(deadline.year)}" />
+          <input id="deadlineTime" type="time" step="60" value="${escapeAttr(deadline.time)}" />
+        </div>
+        <small>Day only means the current month and year. Empty time means 23:59.</small>
       </div>
 
       <div class="field priority-input">
-        <label>Приоритет</label>
-        <input id="fieldPriority" type="number" value="${escapeAttr(task.priority || 2)}" />
+        <label>Priority</label>
+        <div class="priority-control custom-priority-control task-priority-control">
+          <button type="button" class="priority-step" id="taskPriorityDown" aria-label="Lower priority">↓</button>
+          <input id="fieldPriority" inputmode="numeric" value="${escapeAttr(task.priority || 2)}" readonly />
+          <button type="button" class="priority-step" id="taskPriorityUp" aria-label="Higher priority">↑</button>
+        </div>
       </div>
     </div>
   `;
+
+  bindCounter({
+    input: document.getElementById("fieldPriority"),
+    up: document.getElementById("taskPriorityUp"),
+    down: document.getElementById("taskPriorityDown"),
+    min: 1,
+    max: 99,
+    upMeans: 1,
+  });
 
   els.modalBackdrop.classList.add("open");
 }
 
 export function openTaskViewModal(id) {
-  modalMode = "view-task";
-  editingId = id;
-
-  const task = state.tasks.find(item => item.id === id);
-  const direction = state.directions.find(item => item.id === task.directionId);
-
-  els.modalTitle.textContent = "Просмотр задачи";
-  els.deleteBtn.style.display = "none";
-  els.saveBtn.style.display = "none";
-  els.modalActions.style.display = "flex";
-
-  els.modalForm.innerHTML = `
-    <div class="view-block">
-      <div class="view-line">
-        <span class="view-label">Задача</span>
-        <div class="view-value">${escapeHtml(task.title)}</div>
-      </div>
-
-      <div class="view-line">
-        <span class="view-label">Направление</span>
-        <div class="view-value">${escapeHtml(direction?.symbol || "◌")} ${escapeHtml(direction?.title || "Без направления")}</div>
-      </div>
-
-      ${task.description ? `
-        <div class="view-line">
-          <span class="view-label">Описание</span>
-          <div class="view-value">${escapeHtml(task.description)}</div>
-        </div>
-      ` : ""}
-
-      ${task.goal ? `
-        <div class="view-line">
-          <span class="view-label">Результат</span>
-          <div class="view-value">${escapeHtml(task.goal)}</div>
-        </div>
-      ` : ""}
-
-      <div class="view-line">
-        <span class="view-label">Приоритет</span>
-        <div class="view-value">${escapeHtml(task.priority || 2)}</div>
-      </div>
-
-      ${task.deadline ? `
-        <div class="view-line">
-          <span class="view-label">Дедлайн</span>
-          <div class="view-value">${escapeHtml(task.deadline)} · ${escapeHtml(timeLeft(task.deadline))}</div>
-        </div>
-      ` : ""}
-    </div>
-  `;
-
-  els.cancelBtn.textContent = "Закрыть";
-
-  const editBtn = document.createElement("button");
-  editBtn.className = "btn btn-primary";
-  editBtn.textContent = "Редактировать";
-  editBtn.onclick = () => openTaskModal(id);
-
-  const right = els.modalActions.querySelector(".modal-actions-right");
-  right.insertBefore(editBtn, els.saveBtn);
-
-  els.modalBackdrop.classList.add("open");
+  openTaskModal(id);
 }
 
 export function closeModal() {
@@ -266,15 +237,20 @@ export function closeModal() {
   editingId = null;
   nextDirectionPosition = null;
   presetTaskDirectionId = null;
+  resetActionButtons();
+}
 
-  els.cancelBtn.textContent = "Отмена";
-
-  const extraEditButton = els.modalActions.querySelector(".modal-actions-right .btn-primary:not(#saveBtn)");
-  if (extraEditButton) extraEditButton.remove();
-
+function resetActionButtons() {
+  els.cancelBtn.textContent = "Cancel";
+  els.saveBtn.textContent = "Save";
+  els.deleteBtn.textContent = "Delete";
+  els.cancelBtn.style.display = "inline-flex";
   els.saveBtn.style.display = "inline-flex";
   els.deleteBtn.style.display = "inline-flex";
   els.modalActions.style.display = "flex";
+
+  const extraEditButton = els.modalActions.querySelector(".modal-actions-right .btn-primary:not(#saveBtn)");
+  if (extraEditButton) extraEditButton.remove();
 }
 
 function saveDirectionFromModal() {
@@ -312,21 +288,27 @@ function saveDirectionFromModal() {
 }
 
 function saveTaskFromModal() {
+  const deadline = buildDeadlineFromFields();
+  if (deadline === null) return;
+
   const data = {
     title: document.getElementById("fieldTitle").value.trim() || "Untitled task",
     directionId: document.getElementById("fieldDirection").value || presetTaskDirectionId,
     description: document.getElementById("fieldDescription").value.trim(),
     goal: document.getElementById("fieldGoal").value.trim(),
-    deadline: document.getElementById("fieldDeadline").value,
+    deadline,
     priority: Number(document.getElementById("fieldPriority").value || 2)
   };
 
   if (editingId) {
     const task = state.tasks.find(item => item.id === editingId);
-    Object.assign(task, data);
+    Object.assign(task, data, { updatedAt: new Date().toISOString() });
   } else {
+    const now = new Date().toISOString();
     state.tasks.push({
       id: crypto.randomUUID(),
+      createdAt: now,
+      updatedAt: now,
       ...data
     });
   }
@@ -351,4 +333,76 @@ function deleteCurrentEntity() {
   persist();
   closeModal();
   onRender();
+}
+
+function splitDeadline(value) {
+  if (!value) return { day: "", month: "", year: "", time: "" };
+
+  const [datePart, timePart = ""] = String(value).split("T");
+  const [year = "", month = "", day = ""] = datePart.split("-");
+
+  return {
+    day,
+    month,
+    year: year ? year.slice(-2) : "",
+    time: timePart ? timePart.slice(0, 5) : "",
+  };
+}
+
+function buildDeadlineFromFields() {
+  const dayRaw = document.getElementById("deadlineDay")?.value.trim() || "";
+  const monthRaw = document.getElementById("deadlineMonth")?.value.trim() || "";
+  const yearRaw = document.getElementById("deadlineYear")?.value.trim() || "";
+  const timeRaw = document.getElementById("deadlineTime")?.value.trim() || "";
+
+  if (!dayRaw && !monthRaw && !yearRaw && !timeRaw) return "";
+
+  if (!dayRaw) {
+    alert("Please enter the deadline day.");
+    return null;
+  }
+
+  const now = new Date();
+  const day = Number(dayRaw);
+  const month = monthRaw ? Number(monthRaw) : now.getMonth() + 1;
+  const year = yearRaw ? 2000 + Number(yearRaw) : now.getFullYear();
+  const time = timeRaw || "23:59";
+
+  if (!Number.isInteger(day) || day < 1 || day > 31) {
+    alert("Check the deadline day.");
+    return null;
+  }
+
+  if (!Number.isInteger(month) || month < 1 || month > 12) {
+    alert("Check the deadline month.");
+    return null;
+  }
+
+  if (!/^\d{2}:\d{2}$/.test(time)) {
+    alert("Check the deadline time.");
+    return null;
+  }
+
+  const date = new Date(year, month - 1, day);
+  if (
+    date.getFullYear() !== year ||
+    date.getMonth() !== month - 1 ||
+    date.getDate() !== day
+  ) {
+    alert("This date does not exist.");
+    return null;
+  }
+
+  return `${String(year).padStart(4, "0")}-${String(month).padStart(2, "0")}-${String(day).padStart(2, "0")}T${time}`;
+}
+
+function bindCounter({ input, up, down, min = 1, max = 99, upMeans = 1 }) {
+  const clamp = (value) => Math.max(min, Math.min(max, Number(value || min)));
+
+  function setValue(value) {
+    input.value = String(clamp(value));
+  }
+
+  up.addEventListener("click", () => setValue(Number(input.value || min) + upMeans));
+  down.addEventListener("click", () => setValue(Number(input.value || min) - upMeans));
 }

@@ -1,105 +1,72 @@
-<!DOCTYPE html>
-<html lang="ru">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <title>Kuro Task Manager</title>
-
-  <link rel="stylesheet" href="./css/index.css" />
-</head>
-
-<body>
-  <div class="app">
-    <main class="workspace" id="workspace">
-      <div class="toolbar">
-        <button class="btn view-mode-btn" id="viewModeBtn" title="Список / Поле">☰</button>
-      </div>
-
-      <div class="canvas" id="canvas">
-        <div class="world" id="world">
-          <svg class="field-geometry" viewBox="0 0 3200 2400" aria-hidden="true">
-            <g class="field-lines">
-              <line class="field-line field-line-main" x1="1600" y1="1813" x2="1600" y2="-8000" />
-              <line class="field-line field-line-side" x1="1600" y1="1813" x2="-8000" y2="1813" />
-              <line class="field-line field-line-side" x1="1600" y1="1813" x2="11200" y2="1813" />
-              <line class="field-line-pulse" x1="1600" y1="1813" x2="1600" y2="-8000" />
-            </g>
-
-            <path
-              class="field-triangle"
-              d="M1600 1766
-                 C1606 1766 1611 1769 1615 1776
-                 L1637 1815
-                 C1642 1824 1636 1834 1625 1834
-                 L1575 1834
-                 C1564 1834 1558 1824 1563 1815
-                 L1585 1776
-                 C1589 1769 1594 1766 1600 1766 Z"
-            />
-          </svg>
-
-          <div id="directionsLayer"></div>
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kuro Task Manager</title>
+    <link rel="stylesheet" href="./css/index.css" />
+  </head>
+  <body>
+    <div class="app">
+      <main class="workspace" id="workspace">
+        <div class="toolbar">
+          <button
+            class="btn view-mode-btn"
+            id="viewModeBtn"
+            title="List / Field"
+          >
+            ☰
+          </button>
         </div>
-      </div>
-    </main>
-
-    <aside class="sidebar" id="sidebar">
-      <div class="sidebar-content">
-        <section class="panel" id="tasksPanel">
-          <div class="panel-head">
-            <div class="panel-label">
-              <span>Задачи</span>
+        <div class="canvas" id="canvas">
+          <div class="world" id="world">
+            <div id="directionsLayer"></div>
+          </div>
+        </div>
+      </main>
+      <aside class="sidebar" id="sidebar">
+        <div class="sidebar-content">
+          <section class="panel" id="tasksPanel">
+            <div class="panel-head">
+              <div class="panel-label"><span>Tasks</span></div>
             </div>
-          </div>
-
-          <div class="panel-body">
-            <div class="task-list" id="taskList"></div>
-          </div>
-        </section>
-
-        <section class="panel" id="notificationsPanel">
-          <div class="panel-head">
-            <div class="panel-label">
-              <span>Уведомления</span>
+            <div class="panel-body">
+              <div class="task-list" id="taskList"></div>
             </div>
+          </section>
+          <section class="panel" id="notificationsPanel">
+            <div class="panel-head">
+              <div class="panel-label"><span>Notifications</span></div>
+            </div>
+            <div class="panel-body">
+              <div class="notification-list" id="notificationList"></div>
+            </div>
+          </section>
+        </div>
+        <div class="quick-actions">
+          <button class="quick-btn">AI</button>
+          <button class="quick-btn">Mail</button>
+          <button class="quick-btn">TG</button>
+          <button class="quick-btn">Sync</button>
+        </div>
+      </aside>
+    </div>
+    <div class="modal-backdrop" id="modalBackdrop">
+      <div class="modal">
+        <div class="modal-head">
+          <h3 id="modalTitle">Create</h3>
+          <button class="icon-btn small" id="closeModalBtn">×</button>
+        </div>
+        <div class="form" id="modalForm"></div>
+        <div class="modal-actions" id="modalActions">
+          <button class="btn danger" id="deleteBtn">Delete</button>
+          <div class="modal-actions-right">
+            <button class="btn" id="cancelBtn">Cancel</button>
+            <button class="btn btn-primary" id="saveBtn">Save</button>
           </div>
-
-          <div class="panel-body">
-            <div class="notification-list" id="notificationList"></div>
-          </div>
-        </section>
-      </div>
-
-      <div class="quick-actions">
-        <button class="quick-btn">AI</button>
-        <button class="quick-btn">Mail</button>
-        <button class="quick-btn">TG</button>
-        <button class="quick-btn">Sync</button>
-      </div>
-    </aside>
-  </div>
-
-  <div class="modal-backdrop" id="modalBackdrop">
-    <div class="modal">
-      <div class="modal-head">
-        <h3 id="modalTitle">Создание</h3>
-        <button class="icon-btn small" id="closeModalBtn">×</button>
-      </div>
-
-      <div class="form" id="modalForm"></div>
-
-      <div class="modal-actions" id="modalActions">
-        <button class="btn danger" id="deleteBtn">Удалить</button>
-
-        <div class="modal-actions-right">
-          <button class="btn" id="cancelBtn">Отмена</button>
-          <button class="btn btn-primary" id="saveBtn">Сохранить</button>
         </div>
       </div>
     </div>
-  </div>
-
-  <script type="module" src="./js/app.js"></script>
-</body>
+    <script type="module" src="./js/app.js"></script>
+  </body>
 </html>

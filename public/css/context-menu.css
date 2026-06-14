@@ -37,3 +37,24 @@
 .context-menu-item.danger:hover {
   background: rgba(255,109,98,.14);
 }
+
+/* v4 smooth menu motion */
+.context-menu {
+  opacity: 0;
+  transform: translateY(6px) scale(0.985);
+  transform-origin: top left;
+  transition:
+    opacity 150ms ease,
+    transform 150ms cubic-bezier(.2, .9, .2, 1);
+}
+
+.context-menu.open {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.context-menu.closing {
+  opacity: 0;
+  transform: translateY(4px) scale(0.985);
+  pointer-events: none;
+}

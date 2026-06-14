@@ -11,9 +11,19 @@
 
   .sidebar {
     width: 100vw;
-    min-width: 100vw;
+    min-width: 0;
     max-width: 100vw;
     height: 45vh;
+    flex: none;
+  }
+
+  .sidebar:has(#tasksPanel.collapsed),
+  .sidebar:has(#notificationsPanel.collapsed),
+  .sidebar:has(#tasksPanel.collapsed):has(#notificationsPanel.collapsed) {
+    width: 100vw;
+    min-width: 0;
+    max-width: 100vw;
+    flex-basis: auto;
   }
 
   .sidebar-content {
@@ -22,8 +32,8 @@
 
   .toolbar {
     left: 14px;
-    right: 14px;
-    bottom: calc(45vh + 14px);
+    right: auto;
+    bottom: 14px;
     max-width: calc(100vw - 28px);
     overflow-x: auto;
   }
@@ -35,5 +45,103 @@
   *::after {
     animation: none !important;
     transition: none !important;
+  }
+}
+
+/* no entry animations; keep hover/keyboard/drag motion responsive */
+.task-card,
+.notification {
+  animation: none !important;
+}
+
+.btn,
+.icon-btn,
+.quick-btn,
+.context-menu-item {
+  transform: none !important;
+}
+
+/* v3 modal controls */
+.deadline-parts {
+  display: grid;
+  grid-template-columns: 56px 56px 56px minmax(96px, 1fr);
+  gap: 8px;
+}
+
+.deadline-parts input {
+  text-align: center;
+}
+
+.deadline-field small {
+  display: block;
+  margin-top: 7px;
+  color: var(--muted-2);
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+.priority-pills {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.priority-pill,
+.priority-step {
+  min-width: 38px;
+  height: 38px;
+  border: 0;
+  border-radius: 999px;
+  background: rgba(255, 255, 255, 0.06);
+  color: var(--muted);
+  cursor: pointer;
+  transition: background var(--fast), color var(--fast), filter var(--fast);
+}
+
+.priority-pill:hover,
+.priority-step:hover {
+  transform: none;
+  background: rgba(255, 255, 255, 0.1);
+  color: var(--strong);
+}
+
+.priority-pill.active {
+  background: rgba(190, 197, 178, 0.72);
+  color: #12140f;
+  font-weight: 700;
+}
+
+.custom-priority-control {
+  display: inline-grid;
+  grid-template-columns: 38px 76px 38px;
+  gap: 8px;
+  align-items: center;
+}
+
+.custom-priority-control input {
+  text-align: center;
+}
+
+.priority-input input[type="number"],
+.custom-priority-control input {
+  appearance: textfield;
+  -moz-appearance: textfield;
+}
+
+.priority-input input[type="number"]::-webkit-outer-spin-button,
+.priority-input input[type="number"]::-webkit-inner-spin-button,
+.custom-priority-control input::-webkit-outer-spin-button,
+.custom-priority-control input::-webkit-inner-spin-button {
+  appearance: none;
+  margin: 0;
+}
+
+@media (max-width: 520px) {
+  .deadline-parts {
+    grid-template-columns: repeat(3, 1fr);
+  }
+
+  .deadline-parts input[type="time"] {
+    grid-column: 1 / -1;
   }
 }

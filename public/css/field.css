@@ -1,78 +1,129 @@
 .field-geometry {
   position: absolute;
-  inset: 0;
-  width: 3200px;
-  height: 2400px;
-  overflow: visible;
+  inset: 0 auto auto 0;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
   pointer-events: none;
-  z-index: 0;
-}
-
-#directionsLayer {
-  position: relative;
-  z-index: 5;
+  z-index: 10;
 }
 
 .field-line,
 .field-line-pulse {
   vector-effect: non-scaling-stroke;
   stroke-linecap: round;
+  stroke-linejoin: round;
+  fill: none;
 }
 
 .field-line-main {
-  stroke: rgba(255,255,255,.18);
-  stroke-width: 1;
-}
-
-.field-line-side {
-  stroke: rgba(255,255,255,.055);
-  stroke-width: 1;
-  stroke-dasharray: 8 18;
+  stroke: rgba(255, 255, 255, 0.18);
+  stroke-width: 1.5;
 }
 
 .field-line-pulse {
-  stroke: rgba(255,255,255,.92);
-  stroke-width: 2;
-  stroke-dasharray: 36 10000;
+  stroke: rgba(247, 250, 244, 0.96);
+  stroke-width: 5.2;
+  stroke-dasharray: 0.01 5400;
   stroke-dashoffset: 0;
   opacity: 0;
-  filter: drop-shadow(0 0 8px rgba(255,255,255,.55));
-  animation: mainLinePulse 5.4s linear infinite;
+  filter: url(#photonGlow);
+  animation-name: photonPulse;
+  animation-duration: var(--pulse-duration, 15.5s);
+  animation-timing-function: linear;
+  animation-iteration-count: infinite;
+  animation-delay: var(--pulse-delay, 0s);
+}
+
+.field-line-pulse-branch {
+  animation-name: branchPhotonPulse;
+}
+
+.field-triangle-glow {
+  fill: rgba(235, 238, 232, 0.18);
+  opacity: 0.82;
 }
 
 .field-triangle {
-  fill: rgba(255,255,255,.96);
-  stroke: rgba(255,255,255,.28);
-  stroke-width: 1;
+  fill: rgba(244, 244, 238, 0.96);
+  stroke: rgba(255, 255, 255, 0.58);
+  stroke-width: 1.05;
   vector-effect: non-scaling-stroke;
-  filter: drop-shadow(0 18px 34px rgba(0,0,0,.38));
 }
 
-.workspace.list-mode .field-geometry {
-  display: none;
+.field-triangle-inner {
+  fill: rgba(20, 20, 20, 0.28);
+  opacity: 0.64;
 }
 
-@keyframes mainLinePulse {
+@keyframes photonPulse {
   0% {
     opacity: 0;
     stroke-dashoffset: 0;
   }
 
-  10% {
-    opacity: .95;
+  4% {
+    opacity: 0.94;
   }
 
-  42% {
-    opacity: .95;
+  44% {
+    opacity: 0.94;
   }
 
-  55% {
+  58% {
     opacity: 0;
-    stroke-dashoffset: -3200;
+    stroke-dashoffset: calc(var(--pulse-distance, 1200) * -1px);
   }
 
   100% {
     opacity: 0;
-    stroke-dashoffset: -3200;
+    stroke-dashoffset: calc(var(--pulse-distance, 1200) * -1px);
   }
+}
+
+@keyframes branchPhotonPulse {
+  0% {
+    opacity: 0;
+    stroke-dashoffset: 0;
+  }
+
+  2% {
+    opacity: 0.92;
+  }
+
+  16% {
+    opacity: 0.92;
+  }
+
+  26% {
+    opacity: 0;
+    stroke-dashoffset: calc(var(--pulse-distance, 420) * -1px);
+  }
+
+  100% {
+    opacity: 0;
+    stroke-dashoffset: calc(var(--pulse-distance, 420) * -1px);
+  }
+}
+
+/* v4 softer photon and smaller ship */
+.field-line-pulse {
+  stroke-width: 3.4;
+  stroke-dasharray: 28 9999;
+  filter: url(#photonGlow) drop-shadow(0 0 9px rgba(247, 250, 244, 0.42));
+  animation-duration: var(--pulse-duration, 18.5s);
+  animation-fill-mode: both;
+}
+
+.field-line-pulse-branch {
+  stroke-width: 3.1;
+  animation-fill-mode: both;
+}
+
+.field-triangle-glow {
+  opacity: 0.66;
+}
+
+.field-triangle {
+  stroke-width: 0.95;
 }

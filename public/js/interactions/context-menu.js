@@ -20,7 +20,7 @@ export function bindContextMenus({ openDirectionModal, openTaskModal, renderAll 
 
     openContextMenu(event.clientX, event.clientY, [
       {
-        label: "Создать направление",
+        label: "Create direction",
         action: () => openDirectionModal(null, worldPoint)
       }
     ]);
@@ -39,15 +39,15 @@ export function bindContextMenus({ openDirectionModal, openTaskModal, renderAll 
 
     openContextMenu(event.clientX, event.clientY, [
       {
-        label: "Создать задачу",
+        label: "Create task",
         action: () => openTaskModal(null, direction.id)
       },
       {
-        label: "Редактировать",
+        label: "Edit",
         action: () => openDirectionModal(direction.id)
       },
       {
-        label: "Удалить",
+        label: "Delete",
         danger: true,
         action: () => {
           deleteDirection(direction.id);
